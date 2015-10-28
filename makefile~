@@ -1,0 +1,142 @@
+################################################################################
+#
+# Fichier makefile pour labo sur OpenMP.
+#
+# Auteurs: Guy Tremblay.
+#   
+# Cree a l'hiver 2011 pour le cours INF5171, pour les exercices initialement
+# developpes a l'hiver 2009 pour le cours INF7235.
+#
+################################################################################
+
+#@-
+_default: enonce
+#@+
+
+
+#
+# Differentes variables pour execution via le makefile.
+#
+MAIN=pi
+N=1000000
+NBT=10
+
+#MAIN=max
+#N=10000
+#NBT=10
+
+#MAIN=somme-1-a-n
+#N=20
+#NBT=10
+
+#@-
+MAIN=somme-1-a-n-task-prive
+N=20
+NBT=10
+#@+
+
+# Pour que l'erreur d'execution ne termine pas le reste du makefile.
+.IGNORE:
+
+CC     = cc
+CFLAGS = -fopenmp -std=c99 -lm
+RM     = rm -f
+
+# Les divers fichiers objets.
+TMPFILES = TAGS *~ *.o 
+
+
+#
+# Cibles principales.
+#
+
+default: run
+
+compile: $(MAIN)
+
+run: compile
+	./$(MAIN) $(N) $(NBT)
+
+pi: pi.o
+	$(CC) $(CFLAGS) -o pi pi.o
+
+max: max.o
+	$(CC) $(CFLAGS) -o max max.o
+
+somme-1-a-n: somme-1-a-n.o
+	$(CC) $(CFLAGS) -o somme-1-a-n somme-1-a-n.o
+
+diffusion: diffusion.o
+	$(CC) $(CFLAGS) -o diffusion diffusion.o
+
+run_diffusion:
+	export NB_ITERATIONS_IMPRESSION=10; ./diffusion 20 100 1 10 4
+
+#@-
+fibo-prive: fibo-prive.o
+	$(CC) $(CFLAGS) -o fibo-prive fibo-prive.o
+
+hello-prive: hello-prive.o
+	$(CC) $(CFLAGS) -o hello-prive hello-prive.o
+
+foo: foo.o
+	$(CC) $(CFLAGS) -o foo foo.o
+
+nested-prive: nested-prive.o
+	$(CC) $(CFLAGS) -o nested-prive nested-prive.o
+
+somme-1-a-n-task-prive: somme-1-a-n-task-prive.o
+	$(CC) $(CFLAGS) -o somme-1-a-n-task-prive somme-1-a-n-task-prive.o
+
+nested-hierarchique-prive: nested-hierarchique-prive.o
+	$(CC) $(CFLAGS) -o nested-hierarchique-prive nested-hierarchique-prive.o
+
+nbo: nbo.o
+	$(CC) $(CFLAGS) -o nbo nbo.o
+
+pi2: pi2.o
+	$(CC) $(CFLAGS) -o pi2 pi2.o
+
+pi2-prive: pi2-prive.o
+	$(CC) $(CFLAGS) -o pi2-prive pi2-prive.o
+
+pi2-prive-opt: pi2-prive-opt.o
+	$(CC) $(CFLAGS) -o pi2-prive-opt pi2-prive-opt.o
+
+diffusion-spmd: diffusion-spmd.o
+	$(CC) $(CFLAGS) -o diffusion-spmd diffusion-spmd.o
+
+mandelbrot: mandelbrot.o
+	$(CC) $(CFLAGS) -o mandelbrot mandelbrot.o
+#@+
+
+#
+# Regle implicite pour compilation des fichiers .c
+#
+.c.o:
+	$(CC) -c $(CFLAGS) $<
+
+
+#
+# Dependances pour les divers fichiers auxiliaires.
+#
+
+$(TEST): $(TEST).o $(OBJECTS)
+	$(CC) $(CFLAGS) -o $(TEST) $(TEST).o  $(OBJECTS)
+
+clean:
+	@$(RM) $(TMPFILES) pi somme-1-a-n max hello-prive nbo nbo2 diffusion diffusion-spmd nbo-prive res pi2-prive pi2-opt-prive pi2 mandelbrot fibo-prive foo nested-prive nested-hierarchique-prive somme-1-a-n-task-prive
+
+#@-
+enonce: 
+	pdflatex enonce
+
+xv:
+	evince enonce.pdf &
+
+cleanxtra: clean
+	@rm -r -f *.squelette* LaboOpenMP
+	\rm -r -f $(HOME)/public_html/git/LaboOpenMP
+	\rm -r -f $(HOME)/public_html/git/LaboOpenMP.git
+#@⁺
+
